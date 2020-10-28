@@ -2,12 +2,20 @@ document.body.onload = loadApp;
 
 async function loadApp() {
     await appData.get();
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        flag.isDesktop = false;
+    }
+
     appData.fetchVisitedCitiesFromLocalStorage();
     const app = document.getElementById("app");
-    app.innerHTML = page.create();
-    page.setBackgroundImage();
-    page.renderCountryList();
-    page.createUnchangingEventHandlers();
+    if (flag.isDesktop) {
+        app.innerHTML = page.create();
+        page.setBackgroundImage();
+        page.renderCountryList();
+        page.createUnchangingEventHandlers();
+    } else {
+        app.innerHTML = page.createMobile();
+    }
 }
 
 const page = {
@@ -55,6 +63,17 @@ const page = {
                                 <div id="cityListInfoHolder"></div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>`
+        )
+    },
+    createMobile: function () {
+        return (
+            `
+            <img id="backgroundImg"></img>
+                    <div id="pageHolder" style="text-align: center;">
+                        <h1>Desktop only</h1>
                     </div>
                 </div>
             </div>`
@@ -384,8 +403,12 @@ const eventHandlers = {
     onBackgroundLoaded: () => {
         document.getElementById("spinner").setAttribute("class", "hide");
         document.getElementById("backgroundImg").setAttribute("class", "show");
-        setTimeout(()=>{ document.getElementById("frame").setAttribute("class", "show");}, 600);
+        setTimeout(() => { document.getElementById("frame").setAttribute("class", "show"); }, 600);
         document.getElementById("spinner").remove();
         document.getElementById("spinnerHolder").remove();
     }
+}
+
+const flag = {
+    isDesktop: true,
 }
